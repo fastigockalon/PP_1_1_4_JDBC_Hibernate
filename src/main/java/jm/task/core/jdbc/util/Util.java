@@ -1,24 +1,21 @@
 package jm.task.core.jdbc.util;
 
+import jm.task.core.jdbc.model.User;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 import org.hibernate.service.ServiceRegistry;
-
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
-
 
 public class Util {
     private static final String DB_DRIVER = "com.mysql.cj.jdbc.Driver";
     private static final String DB_URL = "jdbc:mysql://localhost:3306/usersdb";
     private static final String DB_USERNAME = "root";
     private static final String DB_PASSWORD = "root";
-
     private static SessionFactory sessionFactory;
 
     //Hibernate настройка соеденения с БД
@@ -31,27 +28,21 @@ public class Util {
                 settings.put(Environment.URL, DB_URL);
                 settings.put(Environment.USER, DB_USERNAME);
                 settings.put(Environment.PASS, DB_PASSWORD);
-                settings.put(Environment.DIALECT,"org.hibernate.dialect.MySQL5Dialect");
+                settings.put(Environment.DIALECT,"org.hibernate.dialect.MySQL8Dialect");
                 settings.put(Environment.SHOW_SQL, "true");
                 settings.put(Environment.HBM2DDL_AUTO,"");
-                configuration.addAnnotatedClass(Util.class);
+                configuration.addAnnotatedClass(User.class);
+                configuration.setProperties(settings);
                 ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
                         .applySettings(configuration.getProperties()).build();
 
                 sessionFactory = configuration.buildSessionFactory(serviceRegistry);
-                System.out.println("Connection established");
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         return sessionFactory;
     }
-
-    public static void closeSessionFactory(){
-        sessionFactory.close();
-    }
-
-
 
     // JDBC настройка соеденения с БД
     public static Connection getConnection() {
